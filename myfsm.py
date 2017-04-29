@@ -46,7 +46,7 @@ def draw_fsm(df, z):
         if df_fsm.values[row, col] > uni_prob:
             diff = get_diff(rows[row], cols[col])
             for nodes in diff:
-                edges[nodes[0], nodes[1]] += df_fsm.values[row, col]
+                edges[nodes[0], nodes[1]] += 1 #df_fsm.values[row, col]
 
     node_size = defaultdict(float)
     for c in cols:
@@ -71,7 +71,7 @@ def draw_fsm(df, z):
             if 'neither' in from_:
                 dg.node(from_, label='neither')
             elif 'not_' in from_:
-                dg.node(from_, label=('!' + to[4:])[:7])
+                dg.node(from_, label=('!' + from_[4:][:8]))
             else:
                 dg.node(from_, label=from_[:8])
             nodes.add(from_)
@@ -80,13 +80,13 @@ def draw_fsm(df, z):
             if 'neither' in to:
                 dg.node(to, label='neither')
             elif 'not_' in to:
-                dg.node(to, label=('! ' + to[4:])[:8])
+                dg.node(to, label=('!' + to[4:])[:8])
             else:
                 dg.node(to, label=to[:8])
             nodes.add(to)
 
-        dg.edge(from_, to, label=' ' + ('%0.3f' % edges[from_, to]).strip('0'),
-                penwidth=str(6*edges[from_, to]))
+        dg.edge(from_, to, label=' %d' % edges[from_, to],
+                penwidth=str(0.03*edges[from_, to]))
     dg.render(filename='graph_%d' % z)
 
 
@@ -100,3 +100,7 @@ if __name__ == '__main__':
                              index_col=0, sep='\t')
     for z in range(150):
         draw_fsm(df_prob_tag_z, z)
+
+    #df_prob_z_user = pd.read_csv('./model/model-150-new/z_by_u.tsv.gz',
+    #                             index_col=0, sep='\t')
+    #print(df_prob_z_user.argmax())
